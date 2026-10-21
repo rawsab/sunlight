@@ -24,6 +24,8 @@ pub enum ConnectMode {
 }
 
 pub struct LampState {
+    pub target_id: Option<String>,
+    pub target_name: String,
     pub status: ConnectionStatus,
     pub peripheral: Option<Peripheral>,
     pub characteristic_uuid: uuid::Uuid,
@@ -40,6 +42,8 @@ pub struct LampState {
 impl LampState {
     pub fn new() -> Self {
         Self {
+            target_id: None,
+            target_name: "SSL-99A4C3".to_string(),
             status: ConnectionStatus::Disconnected,
             peripheral: None,
             characteristic_uuid: uuid::Uuid::parse_str("0000ac52-1212-efde-1523-785fedbeda25")

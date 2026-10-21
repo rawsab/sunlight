@@ -109,6 +109,8 @@ async fn disconnect_lamp(
 
     let peripheral = {
         let mut s = state.lock().await;
+        s.user_disconnected = true;
+        s.connect_epoch = s.connect_epoch.wrapping_add(1);
         s.peripheral.take()
     };
     if let Some(p) = peripheral {
@@ -164,13 +166,37 @@ async fn set_color(
 }
 
 #[tauri::command]
-async fn get_known_device() -> Result<String, LampError> {
-    Ok("SSL-99A4C3".to_string())
+async fn discover_lamps() -> Result<Vec<lamp::NearbyLamp>, LampError> {
+    lamp::discover_lamps().await
 }
 
 #[tauri::command]
-async fn load_state(app: AppHandle) -> Result<Option<AppState>, String> {
-    Ok(store::load(&app))
+async fn select_lamp(id: String, name: String, state: State<'_, SharedLampState>,
+    ambient: State<'_, SharedAmbientEngine>, app: AppHandle) -> Result<(), LampError> {
+    let lamp = state.inner().clone();
+    disconnect_lamp(state, ambient, app).await?;
+    let mut s = lamp.lock().await;
+    s.connect_epoch = s.connect_epoch.wrapping_add(1);
+    s.target_id = Some(id);
+    s.target_name = name;
+    emit_connection_status(&ConnectionStatus::Disconnected);
+    Ok(())
+}
+
+#[tauri::command]
+async fn get_known_device(state: State<'_, SharedLampState>) -> Result<String, LampError> {
+    Ok(state.lock().await.target_name.clone())
+}
+
+#[tauri::command]
+async fn load_state(app: AppHandle, lamp: State<'_, SharedLampState>) -> Result<Option<AppState>, String> {
+    let saved = store::load(&app);
+    if let Some(ref saved) = saved {
+        let mut s = lamp.lock().await;
+        s.target_id = saved.settings.device_id.clone();
+        s.target_name = saved.settings.device_name.clone();
+    }
+    Ok(saved)
 }
 
 #[tauri::command]
@@ -256,6 +282,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            discover_lamps,
+            select_lamp,
             connect_lamp,
             disconnect_lamp,
             reconnect_lamp,

@@ -92,6 +92,8 @@ export default function App() {
     useState<AmbientDebugMetrics | null>(null);
   const [ambientBrightness, setAmbientBrightness] = useState<number | null>(null);
   const [saveCurrentModal, setSaveCurrentModal] = useState(false);
+  const [deviceName, setDeviceName] = useState("SSL-99A4C3");
+  const [deviceId, setDeviceId] = useState<string>();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
   const [loaded, setLoaded] = useState(false);
@@ -285,6 +287,8 @@ export default function App() {
         setB(state.settings.lastColor.b);
         setBrightness(state.settings.lastColor.brightness);
         setLiveUpdate(state.settings.liveUpdate);
+        setDeviceName(state.settings.deviceName);
+        setDeviceId(state.settings.deviceId);
         setAutoConnect(state.settings.autoConnect);
         setTransitionEnabled(state.settings.transitionEnabled ?? true);
         setTransitionDurationMs(state.settings.transitionDurationMs ?? 1200);
@@ -329,7 +333,8 @@ export default function App() {
       const state: AppState = {
         schemaVersion: 2,
         settings: {
-          deviceName: "SSL-99A4C3",
+          deviceName,
+          deviceId,
           autoConnect,
           liveUpdate,
           transitionEnabled,
@@ -348,6 +353,8 @@ export default function App() {
     }, 500);
   }, [
     loaded,
+    deviceName,
+    deviceId,
     autoConnect,
     liveUpdate,
     transitionEnabled,
@@ -530,7 +537,7 @@ export default function App() {
     setLoopSections(data.loopSections);
     setActivePresetId(null);
     setActiveLoopId(null);
-    void saveAppState(data);
+    void saveAppState({ ...data, settings: { ...data.settings, deviceName, deviceId } });
   };
 
   const handleExport = async () => {
@@ -538,7 +545,8 @@ export default function App() {
       const state: AppState = {
         schemaVersion: 2,
         settings: {
-          deviceName: "SSL-99A4C3",
+          deviceName,
+          deviceId,
           autoConnect,
           liveUpdate,
           transitionEnabled,
@@ -640,7 +648,7 @@ export default function App() {
                 }`}
               />
             </span>
-            <span className="text-[11px] font-mono text-[#555568]">SSL-99A4C3</span>
+            <span className="text-[11px] font-mono text-[#555568]">{deviceName}</span>
           </div>
 
           <button
@@ -759,6 +767,10 @@ export default function App() {
 
       <SettingsModal
         open={settingsOpen}
+        deviceName={deviceName}
+        deviceId={deviceId}
+        connectionBusy={status === "scanning" || status === "connecting" || status === "reconnecting"}
+        onLampChange={(id, name) => { stopLoop("disconnect"); setDeviceId(id); setDeviceName(name); setStatus("disconnected"); setError(null); }}
         autoConnect={autoConnect}
         onAutoConnectChange={setAutoConnect}
         transitionEnabled={transitionEnabled}

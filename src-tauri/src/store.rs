@@ -48,6 +48,8 @@ pub struct AmbientConfig {
 pub struct AppSettings {
     #[serde(rename = "deviceName")]
     pub device_name: String,
+    #[serde(rename = "deviceId", default)]
+    pub device_id: Option<String>,
     #[serde(rename = "autoConnect")]
     pub auto_connect: bool,
     #[serde(rename = "liveUpdate")]

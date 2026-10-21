@@ -5,10 +5,10 @@ pub enum LampError {
     #[error("Bluetooth is not available or turned off. Enable Bluetooth and try again.")]
     BluetoothUnavailable,
 
-    #[error("Could not find SSL-99A4C3. Make sure the lamp is on and the iStrip app is closed.")]
+    #[error("Could not find the selected lamp. Make sure the lamp is on and the iStrip app is closed.")]
     DeviceNotFound,
 
-    #[error("Could not connect to SSL-99A4C3. The iStrip app or another device may already be connected. Fully close iStrip and try Refresh Bluetooth.")]
+    #[error("Could not connect to the selected lamp. The iStrip app or another device may already be connected. Fully close iStrip and try Refresh Bluetooth.")]
     DeviceUnavailable,
 
     #[error("Not connected to a lamp. Connect first.")]

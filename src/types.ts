@@ -224,6 +224,7 @@ export interface LoopSection {
 
 export interface AppSettings {
   deviceName: string;
+  deviceId?: string;
   autoConnect: boolean;
   liveUpdate: boolean;
   transitionEnabled: boolean;

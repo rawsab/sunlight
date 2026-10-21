@@ -179,10 +179,17 @@ async fn attempt_auto_reconnect(state: SharedLampState) {
             }
         }
 
-        let peripheral = match scan_for_lamp().await {
+        let target = {
+            let s = state.lock().await;
+            (s.target_id.clone(), s.target_name.clone())
+        };
+        let peripheral = match scan_for_lamp(target.0.as_deref(), &target.1).await {
             Ok(p) => p,
             Err(_) => {
                 let mut s = state.lock().await;
+                if s.user_disconnected || s.connect_epoch != epoch_at_start {
+                    return;
+                }
                 s.reconnect_attempts = s.reconnect_attempts.saturating_add(1);
                 s.status = ConnectionStatus::Failed;
                 s.last_reconnect_at = Some(Instant::now());
@@ -203,6 +210,10 @@ async fn attempt_auto_reconnect(state: SharedLampState) {
 
         if connect_peripheral(&peripheral).await.is_err() {
             let mut s = state.lock().await;
+            if s.user_disconnected || s.connect_epoch != epoch_at_start {
+                disconnect_peripheral(&peripheral).await;
+                return;
+            }
             s.reconnect_attempts = s.reconnect_attempts.saturating_add(1);
             s.status = ConnectionStatus::Failed;
             s.last_reconnect_at = Some(Instant::now());
@@ -251,7 +262,11 @@ pub async fn perform_connect(
         sleep(Duration::from_millis(TEARDOWN_DELAY_MS)).await;
     }
 
-    let peripheral = match scan_for_lamp().await {
+    let target = {
+            let s = state.lock().await;
+            (s.target_id.clone(), s.target_name.clone())
+        };
+        let peripheral = match scan_for_lamp(target.0.as_deref(), &target.1).await {
         Ok(p) => p,
         Err(e) => {
             let mut s = state.lock().await;

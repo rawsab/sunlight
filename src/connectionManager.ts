@@ -148,7 +148,7 @@ export async function verifyOnResume(): Promise<void> {
 
 export function formatConnectionError(e: unknown): string {
   if (typeof e === "string") return e;
-  return "Could not connect to SSL-99A4C3. Make sure the lamp is on and the iStrip app is closed.";
+  return "Could not connect to the selected lamp. Make sure the lamp is on and the iStrip app is closed.";
 }
 
 export function canSend(): boolean {

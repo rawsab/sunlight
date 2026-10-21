@@ -138,7 +138,7 @@ impl AmbientEngine {
         {
             let s = lamp_state.lock().await;
             if s.status != ConnectionStatus::Connected {
-                return Err("Connect to SSL-99A4C3 before starting Ambient Mode.".to_string());
+                return Err("Connect to the selected lamp before starting Ambient Mode.".to_string());
             }
         }
 

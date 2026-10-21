@@ -209,6 +209,7 @@ function parseSettings(raw: unknown): AppState["settings"] | null {
         : "presets";
 
   return {
+    deviceId: typeof raw.deviceId === "string" ? raw.deviceId : undefined,
     deviceName: typeof raw.deviceName === "string" ? raw.deviceName : "SSL-99A4C3",
     autoConnect: typeof raw.autoConnect === "boolean" ? raw.autoConnect : false,
     liveUpdate: typeof raw.liveUpdate === "boolean" ? raw.liveUpdate : true,

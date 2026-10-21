@@ -1,8 +1,15 @@
-import { X, Download, Upload, RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { formatConnectionError } from "../connectionManager";
+import { X, Download, Upload, RotateCcw, ChevronDown, Radio, Loader2 } from "lucide-react";
 import { Modal } from "./Modal";
 
 interface SettingsModalProps {
   open: boolean;
+  deviceName: string;
+  deviceId?: string;
+  connectionBusy: boolean;
+  onLampChange: (id: string, name: string) => void;
   autoConnect: boolean;
   onAutoConnectChange: (v: boolean) => void;
   transitionEnabled: boolean;
@@ -56,6 +63,7 @@ function Toggle({
 
 export function SettingsModal({
   open,
+  deviceName, deviceId, connectionBusy, onLampChange,
   autoConnect,
   onAutoConnectChange,
   transitionEnabled,
@@ -67,6 +75,30 @@ export function SettingsModal({
   onResetPresets,
   onClose,
 }: SettingsModalProps) {
+  const [lamps, setLamps] = useState<{ id: string; name: string }[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const scan = async () => {
+    setBusy(true); setError(null); setMessage(null);
+    try {
+      const found = await invoke<{ id: string; name: string }[]>("discover_lamps");
+      setLamps(found);
+      if (!found.length) setMessage("No nearby lamps found. Turn on your lamp, close iStrip, and scan again.");
+    } catch (e) { setError(formatConnectionError(e)); }
+    finally { setBusy(false); }
+  };
+  const select = async (id: string) => {
+    const lamp = lamps.find(l => l.id === id);
+    if (!lamp) return;
+    setBusy(true); setError(null); setMessage(null);
+    try {
+      await invoke("select_lamp", { id, name: lamp.name });
+      onLampChange(id, lamp.name);
+      setMessage("Lamp selected. Use Connect to connect to this lamp.");
+    } catch (e) { setError(formatConnectionError(e)); }
+    finally { setBusy(false); }
+  };
   return (
     <Modal open={open} onClose={onClose} panelClassName="w-[400px] rounded-xl border border-[#2e2e38] bg-[#1e1e24] shadow-2xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#2e2e38]">
@@ -80,6 +112,28 @@ export function SettingsModal({
         </div>
 
         <div className="px-5 py-4 space-y-5 max-h-[70vh] overflow-y-auto">
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-[#f0f0f4]">Sunlight lamp</h3>
+            <p className="text-xs text-[#555568] leading-relaxed">Choose a lamp to connect to. Switching disconnects the current lamp.</p>
+            <label htmlFor="lamp-choice" className="block text-xs font-medium text-[#9090a0]">Selected lamp</label>
+            <div className="relative">
+            <select id="lamp-choice" value={deviceId ?? ""} disabled={busy || connectionBusy}
+              onChange={e => void select(e.target.value)}
+              className="w-full appearance-none rounded-lg border border-[#2e2e38] bg-[#111114] py-2 pl-3 pr-8 font-[inherit] text-xs font-medium text-[#f0f0f4] outline-none transition-colors hover:border-[#555568] focus-visible:border-[#ff8040]/60 focus-visible:ring-2 focus-visible:ring-[#ff8040]/15 disabled:opacity-50">
+              {!lamps.some(l => l.id === deviceId) && <option value={deviceId ?? ""}>{deviceName}{deviceId ? ` · ${deviceId}` : " (saved lamp)"}</option>}
+              {lamps.map(l => <option key={l.id} value={l.id}>{l.name} · {l.id}</option>)}
+            </select>
+            <ChevronDown size={13} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#555568]" />
+            </div>
+            <button onClick={() => void scan()} disabled={busy || connectionBusy}
+              className="flex w-full items-center gap-2 rounded-lg border border-[#2e2e38] bg-[#111114] px-3 py-2 text-xs font-medium text-[#9090a0] outline-none transition-colors hover:bg-[#1e1e24] hover:text-[#f0f0f4] focus-visible:border-[#ff8040]/60 focus-visible:ring-2 focus-visible:ring-[#ff8040]/15 disabled:opacity-50">
+              {busy ? <Loader2 size={13} className="animate-spin" /> : <Radio size={13} />}
+              {busy ? "Please wait…" : "Scan for nearby lamps"}
+            </button>
+            {message && <p role="status" className="text-xs text-[#9090a0]">{message}</p>}
+            {error && <p role="alert" className="text-xs text-[#f87171]">{error}</p>}
+          </div>
+          <div className="border-t border-[#2e2e38]" />
           <Toggle
             checked={autoConnect}
             onChange={onAutoConnectChange}
