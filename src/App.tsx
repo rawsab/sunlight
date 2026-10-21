@@ -28,7 +28,7 @@ import { loadAppState, saveAppState } from "./storage";
 import { createFreshAppState } from "./migrateState";
 import { seedDefaults } from "./presets";
 import { seedLoopDefaults } from "./loops";
-import { connectLamp } from "./lampApi";
+import { clearThrottledSends, connectLamp } from "./lampApi";
 import { animateColorTransition, cancelTransition } from "./transition";
 import {
   canSend,
@@ -92,6 +92,9 @@ export default function App() {
     useState<AmbientDebugMetrics | null>(null);
   const [ambientBrightness, setAmbientBrightness] = useState<number | null>(null);
   const [saveCurrentModal, setSaveCurrentModal] = useState(false);
+  const powerBusyRef = useRef(false);
+  const lastOnBrightnessRef = useRef(64);
+  const [powerBusy, setPowerBusy] = useState(false);
   const [deviceName, setDeviceName] = useState("SSL-99A4C3");
   const [deviceId, setDeviceId] = useState<string>();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -375,6 +378,38 @@ export default function App() {
   useEffect(() => {
     doPersist();
   }, [doPersist]);
+
+  const handlePowerChange = async (on: boolean) => {
+    if (powerBusyRef.current || statusRef.current !== "connected") return;
+    powerBusyRef.current = true;
+    setPowerBusy(true);
+    try {
+      stopLoop("manual_color");
+      cancelTransition();
+      clearThrottledSends();
+      await stopAmbient("manual_color");
+      // Clear any trailing color update before sending the power change.
+      cancelTransition();
+      clearThrottledSends();
+      const color = colorRef.current;
+      if (color.brightness > 0) lastOnBrightnessRef.current = color.brightness;
+      const nextBrightness = on ? (color.brightness || lastOnBrightnessRef.current) : 0;
+      const result = await safeSetColor(color.r, color.g, color.b, nextBrightness);
+      if (result.sent) {
+        setBrightness(nextBrightness);
+        setActivePresetId(null);
+        setActiveLoopId(null);
+        setError(null);
+      } else {
+        setError("Could not change lamp power. Check the connection and try again.");
+      }
+    } catch (e) {
+      setError(formatConnectionError(e));
+    } finally {
+      powerBusyRef.current = false;
+      setPowerBusy(false);
+    }
+  };
 
   const handleColorChange = (nr: number, ng: number, nb: number, nbr: number) => {
     if (ambientUpdatingRef.current) {
@@ -670,6 +705,8 @@ export default function App() {
             onError={setError}
           />
           <ColorControlPanel
+            powerBusy={powerBusy}
+            onPowerChange={handlePowerChange}
             r={r}
             g={g}
             b={b}

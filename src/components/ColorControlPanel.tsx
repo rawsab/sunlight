@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SlidersHorizontal, Circle, Send } from "lucide-react";
+import { SlidersHorizontal, Circle, Send, Power } from "lucide-react";
 import { RgbSliders } from "./RgbSliders";
 import { ColorWheelPicker } from "./ColorWheelPicker";
 import { CurrentColorPreview } from "./CurrentColorPreview";
@@ -10,6 +10,8 @@ import { safeSetColor } from "../connectionManager";
 type PickerMode = "sliders" | "wheel";
 
 interface ColorControlPanelProps {
+  powerBusy: boolean;
+  onPowerChange: (on: boolean) => Promise<void>;
   r: number;
   g: number;
   b: number;
@@ -22,6 +24,8 @@ interface ColorControlPanelProps {
 }
 
 export function ColorControlPanel({
+  powerBusy,
+  onPowerChange,
   r,
   g,
   b,
@@ -52,14 +56,26 @@ export function ColorControlPanel({
 
   return (
     <div className="space-y-3">
+      <div className="flex gap-2 rounded-xl border border-[#2e2e38] bg-[#18181c] p-3" aria-label="Lamp power">
+        <button type="button" disabled={!connected || powerBusy}
+          onClick={() => void onPowerChange(true)}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#ff8040]/15 px-3 py-2 text-xs font-medium text-[#ff8040] transition-colors hover:bg-[#ff8040]/25 disabled:opacity-50">
+          <Power size={13} /> Turn on
+        </button>
+        <button type="button" disabled={!connected || powerBusy}
+          onClick={() => void onPowerChange(false)}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[#2e2e38] bg-[#111114] px-3 py-2 text-xs font-medium text-[#9090a0] transition-colors hover:bg-[#2e2e38] hover:text-[#f0f0f4] disabled:opacity-50">
+          <Power size={13} /> Turn off
+        </button>
+      </div>
       <CurrentColorPreview r={r} g={g} b={b} brightness={brightness} connected={connected} />
 
       <div className="rounded-xl border border-[#2e2e38] bg-[#18181c] p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex rounded-lg border border-[#2e2e38] p-0.5 gap-0.5">
+        <div className="mb-4 space-y-3">
+          <div className="grid grid-cols-2 gap-1 rounded-lg border border-[#2e2e38] p-1">
             <button
               onClick={() => setMode("sliders")}
-              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+              className={`flex items-center justify-center gap-2 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 mode === "sliders"
                   ? "bg-[#2e2e38] text-[#f0f0f4]"
                   : "text-[#555568] hover:text-[#9090a0]"
@@ -70,7 +86,7 @@ export function ColorControlPanel({
             </button>
             <button
               onClick={() => setMode("wheel")}
-              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+              className={`flex items-center justify-center gap-2 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 mode === "wheel"
                   ? "bg-[#2e2e38] text-[#f0f0f4]"
                   : "text-[#555568] hover:text-[#9090a0]"
@@ -81,10 +97,12 @@ export function ColorControlPanel({
             </button>
           </div>
 
-          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+          <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
+            <span className="text-[11px] text-[#9090a0]">Live updates</span>
             <button
               type="button"
               role="switch"
+              aria-label="Live updates"
               aria-checked={liveUpdate}
               onClick={() => onLiveUpdateChange(!liveUpdate)}
               className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors duration-200 ease-in-out ${
@@ -98,7 +116,6 @@ export function ColorControlPanel({
                 }`}
               />
             </button>
-            <span className="text-[11px] text-[#9090a0]">Live</span>
           </label>
         </div>
 
