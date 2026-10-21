@@ -32,9 +32,9 @@ Built with Tauri, React, TypeScript, and Rust, Sunlight communicates directly wi
 
 <div align="center">
 
-**[Download v0.2.0 →](https://github.com/rawsab/sunlight/releases/tag/v0.2.0)**
+**[Download v0.3.0 →](https://github.com/rawsab/sunlight/releases/tag/v0.3.0)**
 
-<a href="https://github.com/rawsab/sunlight/releases/tag/v0.2.0" target="_self"><img width="200" src="https://github.com/user-attachments/assets/29236d73-1dbb-4437-81ed-69554ac0eee5" alt="Download for macOS" /></a>
+<a href="https://github.com/rawsab/sunlight/releases/tag/v0.3.0" target="_self"><img width="200" src="https://github.com/user-attachments/assets/29236d73-1dbb-4437-81ed-69554ac0eee5" alt="Download for macOS" /></a>
 
 </div>
 
@@ -73,6 +73,8 @@ Automatically sync your lamp with on-screen content in real time. Sunlight uses 
 ## Feature List
 
 - **Bluetooth connectivity** — Discover, connect, reconnect, and disconnect from compatible lamps using Bluetooth Low Energy.
+- **Nearby lamp selection** — Scan for nearby lamps in Settings and choose which one to connect to. The choice is saved for later launches, and lamps that share a name are distinguished by device ID.
+- **Power controls** — Turn the connected lamp on or off. Turning it back on restores the last brightness, and any running loop or Ambient Mode stops first.
 - **Real-time color control** — Adjust colors using a color wheel or RGB sliders, with brightness control and optional live updates.
 - **Custom presets** — Save, edit, reorder, and organize your favorite colors into collapsible sections.
 - **Lighting loops** — Build multi-step color sequences with configurable hold times and smooth or instant transitions.
@@ -89,7 +91,7 @@ Sunlight supports macOS on both Apple Silicon and Intel Macs.
 You'll need:
 
 - A Mac with Bluetooth enabled.
-- An iStrip-compatible Bluetooth sunset lamp that advertises an `SSL-` device name.
+- An iStrip-compatible Bluetooth sunset lamp that advertises an `SSL-` device name. If more than one is nearby, choose it in Settings before connecting.
 
 > **Note:** Close the official iStrip mobile app before connecting through Sunlight. The lamp supports only one active client connection at a time.
 
@@ -111,11 +113,12 @@ If this happens, navigate to **System Settings → Privacy & Security** and sele
 
 ## Getting started
 
-1. **Connect your lamp** — Open Sunlight and use the connection panel in the sidebar to discover and connect to your device.
-2. **Choose a color** — Use the color wheel or RGB sliders to select a color. Enable **Live** to send adjustments immediately.
-3. **Create presets** — Save your current color as a preset and organize your presets into sections for easy access.
-4. **Build lighting loops** — Open the Loops tab to create a sequence of colors, configure transitions, and start playback.
-5. **Try Ambient Mode** — Open the Ambient tab, grant Screen Recording permission, and customize how your lamp responds to on-screen colors.
+1. **Choose your lamp** — Open Settings and scan for nearby lamps. The selected lamp is shown in the sidebar and remembered for the next launch.
+2. **Connect your lamp** — Use the connection panel in the sidebar to connect to the selected device.
+3. **Choose a color** — Use the color wheel or RGB sliders to select a color. Enable **Live updates** to send adjustments immediately, or use **Turn on** and **Turn off** to change power without picking a new color.
+4. **Create presets** — Save your current color as a preset and organize your presets into sections for easy access.
+5. **Build lighting loops** — Open the Loops tab to create a sequence of colors, configure transitions, and start playback.
+6. **Try Ambient Mode** — Open the Ambient tab, grant Screen Recording permission, and customize how your lamp responds to on-screen colors.
 
 Additional preferences, including automatic reconnection, default transition settings, and data import/export, are available from the Settings menu.
 
@@ -170,6 +173,10 @@ src-tauri/target/release/bundle/
 Sunlight uses a Rust backend for Bluetooth Low Energy communication with iStrip-compatible devices, while the React frontend provides the desktop interface for color controls, presets, and lighting sequences.
 
 
+
+## Contributors
+
+- [Ayaan Iqbal](https://github.com/AyaanIqbal)
 
 ## License
 

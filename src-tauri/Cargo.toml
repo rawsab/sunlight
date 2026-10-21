@@ -1,6 +1,6 @@
 [package]
 name = "sunlight"
-version = "0.2.0"
+version = "0.3.0"
 description = "Sunlight"
 authors = ["rawsabsaid"]
 edition = "2021"
