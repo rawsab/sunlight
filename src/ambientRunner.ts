@@ -136,7 +136,7 @@ export async function startAmbient(
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!callbacks) return { ok: false, error: "Ambient runner not initialized." };
   if (!callbacks.getConnected()) {
-    return { ok: false, error: "Connect to SSL-99A4C3 before starting Ambient Mode." };
+    return { ok: false, error: "Connect to the selected lamp before starting Ambient Mode." };
   }
 
   stopping = false;

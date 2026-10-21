@@ -120,7 +120,10 @@ export function SettingsModal({
             <select id="lamp-choice" value={deviceId ?? ""} disabled={busy || connectionBusy}
               onChange={e => void select(e.target.value)}
               className="w-full appearance-none rounded-lg border border-[#2e2e38] bg-[#111114] py-2 pl-3 pr-8 font-[inherit] text-xs font-medium text-[#f0f0f4] outline-none transition-colors hover:border-[#555568] focus-visible:border-[#ff8040]/60 focus-visible:ring-2 focus-visible:ring-[#ff8040]/15 disabled:opacity-50">
-              {!lamps.some(l => l.id === deviceId) && <option value={deviceId ?? ""}>{deviceName}{deviceId ? ` · ${deviceId}` : " (saved lamp)"}</option>}
+              {!deviceId && <option value="">No lamp selected</option>}
+              {deviceId && !lamps.some(l => l.id === deviceId) && (
+                <option value={deviceId}>{deviceName || "Saved lamp"} · {deviceId}</option>
+              )}
               {lamps.map(l => <option key={l.id} value={l.id}>{l.name} · {l.id}</option>)}
             </select>
             <ChevronDown size={13} aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#555568]" />

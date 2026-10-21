@@ -95,7 +95,7 @@ export default function App() {
   const powerBusyRef = useRef(false);
   const lastOnBrightnessRef = useRef(64);
   const [powerBusy, setPowerBusy] = useState(false);
-  const [deviceName, setDeviceName] = useState("SSL-99A4C3");
+  const [deviceName, setDeviceName] = useState("");
   const [deviceId, setDeviceId] = useState<string>();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
@@ -304,7 +304,7 @@ export default function App() {
         setLoops(state.loops);
         setLoopSections(state.loopSections);
 
-        if (state.settings.autoConnect) {
+        if (state.settings.autoConnect && (state.settings.deviceId || state.settings.deviceName)) {
           setStatus("scanning");
           try {
             await connectLamp();
@@ -683,7 +683,9 @@ export default function App() {
                 }`}
               />
             </span>
-            <span className="text-[11px] font-mono text-[#555568]">{deviceName}</span>
+            <span className={`text-[11px] text-[#555568] ${deviceName ? "font-mono" : ""}`}>
+              {deviceName || "No lamp selected"}
+            </span>
           </div>
 
           <button
@@ -703,6 +705,7 @@ export default function App() {
             onStatusChange={setStatus}
             error={error}
             onError={setError}
+            hasSelectedLamp={Boolean(deviceId || deviceName)}
           />
           <ColorControlPanel
             powerBusy={powerBusy}

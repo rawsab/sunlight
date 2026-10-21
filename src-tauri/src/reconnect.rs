@@ -57,6 +57,7 @@ async fn connection_watchdog(state: SharedLampState) {
         let should_reconnect = {
             let s = state.lock().await;
             !s.user_disconnected
+                && s.has_target()
                 && !s.reconnect_in_progress
                 && matches!(
                     s.status,
@@ -107,7 +108,7 @@ async fn maybe_send_keepalive(state: &SharedLampState) {
 async fn attempt_auto_reconnect(state: SharedLampState) {
     let epoch_at_start = {
         let mut s = state.lock().await;
-        if s.user_disconnected {
+        if s.user_disconnected || !s.has_target() {
             return;
         }
         if s.reconnect_in_progress {
@@ -246,6 +247,13 @@ pub async fn perform_connect(
         ConnectMode::Reconnect => ConnectionStatus::Reconnecting,
         ConnectMode::Manual | ConnectMode::Refresh => ConnectionStatus::Scanning,
     };
+
+    {
+        let s = state.lock().await;
+        if !s.has_target() {
+            return Err(LampError::NoLampSelected);
+        }
+    }
 
     let existing = {
         let mut s = state.lock().await;

@@ -5,6 +5,9 @@ pub enum LampError {
     #[error("Bluetooth is not available or turned off. Enable Bluetooth and try again.")]
     BluetoothUnavailable,
 
+    #[error("Select a lamp in Settings before connecting.")]
+    NoLampSelected,
+
     #[error("Could not find the selected lamp. Make sure the lamp is on and the iStrip app is closed.")]
     DeviceNotFound,
 

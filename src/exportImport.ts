@@ -20,6 +20,7 @@ import {
 } from "./ambientConfigUtils";
 import { seedDefaults } from "./presets";
 import { seedLoopDefaults } from "./loops";
+import { normalizeDeviceSelection } from "./migrateState";
 
 const APP_NAME = "Sunlight" as const;
 const LEGACY_APP_NAME = "Sunset Lamp Controller" as const;
@@ -209,8 +210,7 @@ function parseSettings(raw: unknown): AppState["settings"] | null {
         : "presets";
 
   return {
-    deviceId: typeof raw.deviceId === "string" ? raw.deviceId : undefined,
-    deviceName: typeof raw.deviceName === "string" ? raw.deviceName : "SSL-99A4C3",
+    ...normalizeDeviceSelection(raw.deviceName, raw.deviceId),
     autoConnect: typeof raw.autoConnect === "boolean" ? raw.autoConnect : false,
     liveUpdate: typeof raw.liveUpdate === "boolean" ? raw.liveUpdate : true,
     transitionEnabled:

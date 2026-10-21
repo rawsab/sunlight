@@ -32,9 +32,9 @@ Built with Tauri, React, TypeScript, and Rust, Sunlight communicates directly wi
 
 <div align="center">
 
-**[Download v0.3.0 →](https://github.com/rawsab/sunlight/releases/tag/v0.3.0)**
+**[Download v0.3.1 →](https://github.com/rawsab/sunlight/releases/tag/v0.3.1)**
 
-<a href="https://github.com/rawsab/sunlight/releases/tag/v0.3.0" target="_self"><img width="200" src="https://github.com/user-attachments/assets/29236d73-1dbb-4437-81ed-69554ac0eee5" alt="Download for macOS" /></a>
+<a href="https://github.com/rawsab/sunlight/releases/tag/v0.3.1" target="_self"><img width="200" src="https://github.com/user-attachments/assets/29236d73-1dbb-4437-81ed-69554ac0eee5" alt="Download for macOS" /></a>
 
 </div>
 
@@ -73,7 +73,7 @@ Automatically sync your lamp with on-screen content in real time. Sunlight uses 
 ## Feature List
 
 - **Bluetooth connectivity** — Discover, connect, reconnect, and disconnect from compatible lamps using Bluetooth Low Energy.
-- **Nearby lamp selection** — Scan for nearby lamps in Settings and choose which one to connect to. The choice is saved for later launches, and lamps that share a name are distinguished by device ID.
+- **Nearby lamp selection** — Scan for nearby lamps in Settings and choose which one to connect to. A new launch starts with no lamp selected. The choice is saved for later launches, and lamps that share a name are distinguished by device ID.
 - **Power controls** — Turn the connected lamp on or off. Turning it back on restores the last brightness, and any running loop or Ambient Mode stops first.
 - **Real-time color control** — Adjust colors using a color wheel or RGB sliders, with brightness control and optional live updates.
 - **Custom presets** — Save, edit, reorder, and organize your favorite colors into collapsible sections.
@@ -113,7 +113,7 @@ If this happens, navigate to **System Settings → Privacy & Security** and sele
 
 ## Getting started
 
-1. **Choose your lamp** — Open Settings and scan for nearby lamps. The selected lamp is shown in the sidebar and remembered for the next launch.
+1. **Choose your lamp** — Open Settings and scan for nearby lamps. Until you choose one, the sidebar shows **No lamp selected**. The choice is remembered for the next launch.
 2. **Connect your lamp** — Use the connection panel in the sidebar to connect to the selected device.
 3. **Choose a color** — Use the color wheel or RGB sliders to select a color. Enable **Live updates** to send adjustments immediately, or use **Turn on** and **Turn off** to change power without picking a new color.
 4. **Create presets** — Save your current color as a preset and organize your presets into sections for easy access.

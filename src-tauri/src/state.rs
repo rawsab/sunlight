@@ -40,10 +40,17 @@ pub struct LampState {
 }
 
 impl LampState {
+    pub fn has_target(&self) -> bool {
+        self.target_id
+            .as_ref()
+            .is_some_and(|id| !id.trim().is_empty())
+            || !self.target_name.trim().is_empty()
+    }
+
     pub fn new() -> Self {
         Self {
             target_id: None,
-            target_name: "SSL-99A4C3".to_string(),
+            target_name: String::new(),
             status: ConnectionStatus::Disconnected,
             peripheral: None,
             characteristic_uuid: uuid::Uuid::parse_str("0000ac52-1212-efde-1523-785fedbeda25")

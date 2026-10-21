@@ -14,6 +14,7 @@ interface ConnectionPanelProps {
   onStatusChange: (status: ConnectionStatus) => void;
   error: string | null;
   onError: (e: string | null) => void;
+  hasSelectedLamp: boolean;
 }
 
 const STATUS_LABEL: Record<ConnectionStatus, string> = {
@@ -46,6 +47,7 @@ export function ConnectionPanel({
   onStatusChange,
   error,
   onError,
+  hasSelectedLamp,
 }: ConnectionPanelProps) {
   const [busy, setBusy] = useState(false);
   const pollerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -150,7 +152,7 @@ export function ConnectionPanel({
           </div>
           <button
             onClick={handleRefresh}
-            disabled={busy || isBusyState}
+            disabled={busy || isBusyState || !hasSelectedLamp}
             title="Refresh Bluetooth"
             className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[#9090a0] hover:bg-[#2e2e38] disabled:opacity-50 transition-colors flex-shrink-0"
           >
@@ -165,7 +167,7 @@ export function ConnectionPanel({
             {canConnect && (
               <button
                 onClick={handleConnect}
-                disabled={busy || isBusyState}
+                disabled={busy || isBusyState || !hasSelectedLamp}
                 className="flex w-full items-center justify-center gap-1 rounded-md bg-[#ff8040]/15 px-2.5 py-1 text-xs font-medium text-[#ff8040] hover:bg-[#ff8040]/25 disabled:opacity-50 transition-colors"
               >
                 <Power size={11} />
@@ -196,6 +198,12 @@ export function ConnectionPanel({
           </div>
         )}
       </div>
+
+      {!hasSelectedLamp && (
+        <p className="mt-3 text-[11px] leading-relaxed text-[#555568]">
+          Select a lamp in Settings before connecting.
+        </p>
+      )}
 
       {error && (
         <p className="mt-3 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-[#f87171] leading-relaxed">

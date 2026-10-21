@@ -193,8 +193,16 @@ async fn load_state(app: AppHandle, lamp: State<'_, SharedLampState>) -> Result<
     let saved = store::load(&app);
     if let Some(ref saved) = saved {
         let mut s = lamp.lock().await;
-        s.target_id = saved.settings.device_id.clone();
-        s.target_name = saved.settings.device_name.clone();
+        let legacy_placeholder = saved.settings.device_id.is_none()
+            && (saved.settings.device_name.trim().is_empty()
+                || saved.settings.device_name == "SSL-99A4C3");
+        if legacy_placeholder {
+            s.target_id = None;
+            s.target_name = String::new();
+        } else {
+            s.target_id = saved.settings.device_id.clone();
+            s.target_name = saved.settings.device_name.clone();
+        }
     }
     Ok(saved)
 }
