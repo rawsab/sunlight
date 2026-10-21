@@ -17,7 +17,7 @@
 
 
 <h3 align="center">
-  Built by <a href="https://github.com/rawsab" target="_blank" rel="noopener noreferrer">Rawsab Said</a>
+  Built by <a href="https://www.linkedin.com/in/rawsabsaid/" target="_blank" rel="noopener noreferrer">Rawsab Said</a>
 </h3>
 <p align="center">
   A native macOS app for controlling iStrip-compatible Bluetooth sunset lamps. Connect to your lamp, adjust colors in real time, organize presets, and create custom lighting sequences — all from your desktop.
