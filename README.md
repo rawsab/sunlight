@@ -20,7 +20,7 @@
   Built by <a href="https://www.linkedin.com/in/rawsabsaid/" target="_blank" rel="noopener noreferrer">Rawsab Said</a>
 </h3>
 <p align="center">
-  A native macOS app for controlling Bluetooth/BLE sunset lamps. Adjust colors in real time, organize presets, create custom lighting sequences, and sync your lamp with on-screen content with adaptive ambient lighting — all from your desktop.
+  A native macOS app for controlling iStrip-compatible Bluetooth sunset lamps. Adjust colors in real time, organize presets, create custom lighting sequences, and sync your lamp with on-screen content with adaptive ambient lighting — all from your desktop.
 </p>
 
 
